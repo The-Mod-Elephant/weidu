@@ -36,8 +36,8 @@ all : weidu
 
 RELEASE    := 1
 NATIVECAML := 1
-VERSION_MAJOR := $(shell grep 'version =' src/version.ml | cut -d'"' -f2 | cut -c-3)
-VERSION_MINOR := $(shell grep 'version =' src/version.ml | cut -d'"' -f2 | cut -c4-)
+VERSION_MAJOR := $(shell grep 'version =' src/version.ml | cut -d'"' -f2 -s | cut -c-3)
+VERSION_MINOR := $(shell grep 'version =' src/version.ml | cut -d'"' -f2 -s | cut -c4-)
 
 # UNSAFE     := 1
 
@@ -161,7 +161,7 @@ clean:
 	src/*parser*.ml src/*parser*.mli src/*lexer*.ml src/*lexer*.mli src/*.cmi \
 	src/tlexer.mll src/trealparserin.gr  \
 	src/toldlexer.mll src/tph.ml
-	rm -rf obj
+	find obj -exec rm {} \; || true
 
 
 ###
