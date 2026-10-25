@@ -18,7 +18,7 @@ The version of OCaml needs to be greater than or equal to 4.04 and less than or 
 - OCaml with native compilers. Generally we recommend [opam](https://opam.ocaml.org/) to get started. You'll need to create a switch because weidu uses unsafe strings:
 
 ```sh
-opam switch create 4.08.1+default-unsafe-string
+opam switch create --packages=ocaml-option-default-unsafe-string ocaml-variants.4.14.2+options
 ```
 
 - A basic GCC tool chain with make. This should come preinstalled on most versions of linux.

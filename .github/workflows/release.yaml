@@ -13,15 +13,19 @@ jobs:
     permissions:
       contents: write
       actions: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@main
+      - name: build docs
+        run: |
+          sudo apt-get install -yqqq hevea zip perl make
+          make doc
       - name: download linux artifact
         uses: actions/download-artifact@main
         with:
           run-id: ${{ inputs.run_id }}
           github-token: ${{ github.token }}
-          name: ubuntu-latest
+          name: ubuntu-22.04
           path: linux
       - name: download mac artifact
         uses: actions/download-artifact@main
@@ -52,10 +56,25 @@ jobs:
           mv "${arm}" "${arm/WeiDU-Mac-/WeiDU-Mac-ARM-}"
           mv macos-arm/WeiDU-*.zip .
           mv windows/*.zip .
+          for file in $(ls *zip); do
+            platform=$(echo "${file}" | awk -F '-' '{ print $1"-"$2}')
+            echo "Adding README-WeiDU.html to ${platform}/${file}"
+            mkdir -p ${platform}
+            cp README-WeiDU.html ${platform}/. || true
+            zip -ur ${file} ${platform}
+          done
+      - name: determine prerelease
+        id: prerelease
+        run: |
+          if [[ "${{ github.ref_name }}" =~ ^v[0-9]+\.00$ ]]; then
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          fi
       - name: Create Release
         id: create_release
         uses: ncipollo/release-action@v1.20.0
         with:
-          generateReleaseNotes: true
           artifacts: "*zip"
-          prerelease: ${{ contains(github.ref_name, 'nightly') }}
+          prerelease: ${{ steps.prerelease.outputs.prerelease }}
+          generateReleaseNotes: ${{ contains(github.ref_name, 'nightly') }}

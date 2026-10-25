@@ -19,7 +19,6 @@ diffs/*
 .project
 .paths
 .settings/
-/Configuration
 .envrc
 .direnv
 result
